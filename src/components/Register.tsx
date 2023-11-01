@@ -1,115 +1,136 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from '@fortawesome/free-solid-svg-icons'
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useState } from 'react';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faLock } from '@fortawesome/free-solid-svg-icons';
+import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
 
-    const userRegex = /^[a-zA-Z][a-zA-Z0-9_]{2,19}$/;
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&+=!])[A-Za-z\d@#$%^&+=!]{8,}$/;
+    const navigate = useNavigate();
 
-    const [userName, setUserName] = useState('');
-    const [password, setPassword] = useState('');
+    const initialFormData = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+    };
 
-    const [usernameValid, setUsernameValid] = useState(false);
-    const [passwordValid, setPasswordValid] = useState(false);
+    const [formData, setFormData] = useState(initialFormData);
+    const [passMatchError, setPassMatchError] = useState(false);
+    const [submissionSuccess, setSubmissionSuccess] = useState(false);
 
-    const [passwordMatch, setPasswordMatch] = useState('');
-    const [passMatchValid, setPassMatchValid] = useState(false);
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+    };
 
-    const [errorMessage, setErrorMessage] = useState('');
-    const [sucess, setSucess] = useState(false);
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-    const userRef = useRef<HTMLInputElement | null>(null);
-    const errRef = useRef<HTMLDivElement | null>(null);
+        if (formData.password !== formData.confirmPassword) {
+            setPassMatchError(true);
+            setSubmissionSuccess(false);
+            console.log('Password mismatch!')
 
-    useEffect(() => {
-        userRef.current?.focus();
-    }, [])
-
-    useEffect(() => {
-        const result = userRegex.test(userName);
-        console.log(result);
-        console.log(userName);
-        setUsernameValid(result);
-    }, [userName])
-
-    useEffect(() => {
-        const result = passwordRegex.test(password);
-        console.log(result);
-        console.log(password);
-        setPasswordValid(result);
-
-        const match = password === passwordMatch;
-        setPassMatchValid(match);
-
-    }, [password, passwordMatch])
-
-    // FOR ERROR MESSAGE
-    useEffect(() => {
-        setErrorMessage('');
-    }, [userName, password, passwordMatch])
-
-    // useEffect(() => {
-    //     if (!usernameValid || !passwordValid || !passMatchValid) {
-    //         setErrorMessage('There are validation errors. Please check the form.');
-    //     } else {
-    //         setErrorMessage('');
-    //     }
-    // }, [userName, password, passwordMatch, usernameValid, passwordValid, passMatchValid]);
-
-    const handleSubmit = () => {
-        if (usernameValid && passwordValid && passMatchValid) {
-            setSucess(true);
+        } else {
+            setPassMatchError(false);
+            setSubmissionSuccess(true);
+            console.log(formData);
+            setFormData(initialFormData); // to clear the form when sucess
+            navigate('/login')
         }
-    }
+    };
 
     return (
-        <section className='flex flex-col bg-slate-50 max-w-[50%]'>
-            <h1>Register</h1>
-            <form>
-                <input
-                    type="text"
-                    id='username'
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    required
-                    placeholder='Username'
-                />
-                <input
-                    type="password"
-                    id='password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder='Password'
-                />
-                <input
-                    type="password"
-                    id='confirmPass'
-                    value={passwordMatch}
-                    onChange={(e) => setPasswordMatch(e.target.value)}
-                    required
-                    placeholder='Confirm Password'
-                />
+        <section className='form-container flex flex-col items-center justify-between bg-slate-400 w-[40%] rounded-[25px] py-[7rem]'>
+            <h1 className=' text-[2.5rem] text-white font-bold pb-[1rem]'>Registration Form</h1>
+            <form onSubmit={handleSubmit} className='flex flex-col'>
+                <div className='input-container'>
+                    <FontAwesomeIcon icon={faUser} className='icon-input bg-slate-700 hover:bg-slate-300 hover:text-slate-700 hover:font-bold' />
+                    <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        value={formData.firstName}
+                        onChange={handleChange}
+                        required
+                        placeholder='First Name'
+                        className='input'
+                    />
+                </div>
 
-                <p ref={errRef} style={{ color: 'red' }}>
-                    {errorMessage}
-                </p>
+                <div className='input-container'>
+                    <FontAwesomeIcon icon={faUser} className='icon-input bg-slate-700 hover:bg-slate-300 hover:text-slate-700 hover:font-bold' />
+                    <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        value={formData.lastName}
+                        onChange={handleChange}
+                        required
+                        placeholder='Last Name'
+                        className='input'
+                    />
+                </div>
+
+                <div className='input-container'>
+                    <FontAwesomeIcon icon={faEnvelope} className='icon-input bg-slate-700 hover:bg-slate-300 hover:text-slate-700 hover:font-bold' />
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        placeholder='Email'
+                        className='input'
+                    />
+                </div>
+
+                <div className='input-container'>
+                    <FontAwesomeIcon icon={faLock} className='icon-input bg-slate-700 hover:bg-slate-300 hover:text-slate-700 hover:font-bold' />
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        placeholder='Password'
+                        className='input'
+                    />
+                </div>
+
+                <div className='input-container'>
+                    <FontAwesomeIcon icon={faKey} className='icon-input bg-slate-700 hover:bg-slate-300 hover:text-slate-700 hover:font-bold' />
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                        placeholder='Confirm Password'
+                        className='input'
+                    />
+                </div>
 
                 <button
-                    type='submit'
-                    onClick={handleSubmit}
+                    type="submit"
+                    className=' bg-slate-700 text-slate-100 text-[1rem] font-medium rounded-[10px] py-[.8rem] mt-[1.5rem] hover:bg-slate-300 hover:text-slate-700 hover:font-bold'
                 >
                     Register
                 </button>
-                {sucess ? (
-                    <p style={{ color: 'green' }}>Registration successful!</p>
-                ) : (
-                    <p style={{ color: 'red' }}>Registration failed!</p>
-                )}
             </form>
         </section>
-    )
+    );
 }
 
-export default Register
+export default Register;
