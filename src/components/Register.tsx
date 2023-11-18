@@ -11,6 +11,8 @@ const Register = () => {
 
     const navigate = useNavigate();
 
+    const REGISTER_URL = '/register';
+
     const initialFormData = {
         firstName: '',
         lastName: '',
